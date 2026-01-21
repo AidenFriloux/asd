@@ -157,11 +157,7 @@ function moveBodyAToBodyB (bodyA, bodyB){
   bodyA.column = bodyB.column;
   bodyA.direction = bodyB.direction;
 }
-console.log("Moving body A to body B...");
-setTimeout(() => {
-  moveBodyAToBodyB(snake.body[1], snake.head);
-  repositionSquare(snake.body[1]);
-}, 2_000); 
+
 
 
 
@@ -172,14 +168,21 @@ function hasHitWall() {
     
     HINT: What will the row and column of the snake's head be if this were the case?
   */
-function hasHitWall() {
   if (snake.head.row < 0) {
+    return true;
 }
- if (snake.head.column < 0 )
+ else if (snake.head.column < 0 ) {
+    return true;
+ }
+ else if (snake.head.row > ROWS - 1) {
+  return true;
+ }
+ else if (snake.head.column > COLUMNS - 1) {
+  return true;
+ }
+  else return false;
+}
 
-  return false;
-}
-}
 
 function hasCollidedWithApple() {
   /* 
@@ -188,10 +191,10 @@ function hasCollidedWithApple() {
     
     HINT: Both the apple and the snake's head are aware of their own row and column
   */
-
-
-
-  return false;
+return (
+    snake.head.row === apple.row &&
+    snake.head.column === apple.column
+  );
 }
 
 function handleAppleCollision() {
@@ -218,8 +221,15 @@ function hasCollidedWithSnake() {
     head and each part of the snake's body also knows its own row and column.
   */
 
-
-
+  for (var i = 1; i < snake.body.length; i++) {
+    var square = snake.body[i];
+    if (
+      snake.head.row === square.row &&
+      snake.head.column === square.column
+    ) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -336,23 +346,24 @@ function repositionSquare(square) {
 /* Returns a (row,column) Object that is not occupied by another game component
  */
 function getRandomAvailablePosition() {
-  var spaceIsAvailable;
+  var spaceIsAvailable = false;
   var randomPosition = {};
 
-  /* Generate random positions until one is found that doesn't overlap with the snake */
   while (!spaceIsAvailable) {
     randomPosition.column = Math.floor(Math.random() * COLUMNS);
     randomPosition.row = Math.floor(Math.random() * ROWS);
     spaceIsAvailable = true;
 
-    /*
-      TODO 14: After generating the random position determine if that position is
-      not occupied by a snakeSquare in the snake's body. If it is then set 
-      spaceIsAvailable to false so that a new position is generated.
-    */
-
-
-
+    for (var i = 0; i < snake.body.length; i++) {
+      var square = snake.body[i];
+      if (
+        square.row === randomPosition.row &&
+        square.column === randomPosition.column
+      ) {
+        spaceIsAvailable = false;
+        break;
+      }
+    }
   }
 
   return randomPosition;
